@@ -305,7 +305,8 @@ async function handleAdmin(request, env, adminSecret) {
       await addToIndex(env, shareKey);
       return json({ shareKey, expiresAt: record.expiresAt, tokenLimit, name, curl: `curl -X POST https://${request.headers.get("host")}/v1/messages -H "X-Share-Key: ${shareKey}" -H "Content-Type: application/json" -d '{...}'` }, 201);
     } catch (err) {
-      return json({ error: "Create key failed", message: err.message, stack: err.stack }, 500);
+      const msg = err.message && err.message.includes("limit exceeded") ? "KV daily write limit exceeded. Upgrade to Workers Paid plan or wait for reset." : err.message || "Unknown error";
+      return json({ error: "Create key failed", message: msg }, 500);
     }
   }
   if (request.method === "POST" && path === "/admin/revoke") {
@@ -865,7 +866,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// ../.wrangler/tmp/bundle-OSosFP/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-vQMGgk/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -897,7 +898,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// ../.wrangler/tmp/bundle-OSosFP/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-vQMGgk/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

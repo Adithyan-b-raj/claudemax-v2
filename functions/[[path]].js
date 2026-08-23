@@ -359,7 +359,10 @@ async function handleAdmin(request, env, adminSecret) {
       await addToIndex(env, shareKey);
       return json({ shareKey, expiresAt: record.expiresAt, tokenLimit, name, curl: `curl -X POST https://${request.headers.get("host")}/v1/messages -H "X-Share-Key: ${shareKey}" -H "Content-Type: application/json" -d '{...}'` }, 201);
     } catch (err) {
-      return json({ error: "Create key failed", message: err.message, stack: err.stack }, 500);
+      const msg = err.message && err.message.includes("limit exceeded")
+        ? "KV daily write limit exceeded. Upgrade to Workers Paid plan or wait for reset."
+        : err.message || "Unknown error";
+      return json({ error: "Create key failed", message: msg }, 500);
     }
   }
 

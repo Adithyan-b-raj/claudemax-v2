@@ -238,7 +238,11 @@
     const cap = parseInt($("f-cap").value) || 100000;
     const r = await api("POST", "/admin/create", { days, tokenLimit: cap, name });
     if (r && r.ok) { toast("Key created"); location.reload(); }
-    else toast("Failed to create key");
+    else {
+      let msg = "Failed to create key";
+      try { const d = await r.json(); msg = d.message || d.error || msg; } catch {}
+      toast(msg);
+    }
   });
 
   // ── Event delegation for action buttons ──
