@@ -1,0 +1,12 @@
+name = "claude-max"
+main = "functions/[[path]].js"
+compatibility_date = "2025-01-01"
+
+[[kv_namespaces]]
+binding = "SHARE_KV"
+id = "4bde4ce06404405bbc101afdebe66e0c"
+
+[vars]
+ENVIRONMENT = "production"
+ADMIN_SECRET = "test-secret-123"
+ANTHROPIC_API_KEY = "test-api-key-placeholder"

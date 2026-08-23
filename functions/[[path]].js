@@ -123,7 +123,7 @@ async function proxyRelay(request, env, ctx) {
 
   const body = await request.text();
   let isStream = false;
-  try { isStream = JSON.parse(body).stream === true; } catch {}
+  try { isStream = JSON.parse(body).stream === true; } catch { }
 
   const upstream = await fetch("https://api.opusmax.pro/v1/messages", {
     method: "POST",
@@ -174,7 +174,7 @@ async function proxyRelay(request, env, ctx) {
                   outputTokens += evt.usage.output_tokens || 0;
                   totalTokens = inputTokens + outputTokens + cacheReadTokens + cacheCreationTokens;
                 }
-              } catch {}
+              } catch { }
             }
           }
         }
@@ -209,7 +209,7 @@ async function proxyRelay(request, env, ctx) {
       cacheReadTokens = parsed.usage.cache_read_input_tokens || 0;
       cacheCreationTokens = parsed.usage.cache_creation_input_tokens || 0;
     }
-  } catch {}
+  } catch { }
 
   const total = inputTokens + outputTokens + cacheReadTokens + cacheCreationTokens;
 
@@ -346,17 +346,21 @@ async function handleAdmin(request, env, adminSecret) {
 
   // Create key
   if (request.method === "POST" && path === "/admin/create") {
-    const body = await request.json().catch(() => ({}));
-    const days = Math.min(30, Math.max(1, parseInt(body.days) || 1));
-    const tokenLimit = Math.min(100_000_000, Math.max(1000, parseInt(body.tokenLimit) || 100000));
-    const name = (body.name || "shared").slice(0, 50);
-    const shareKey = generateKey(16);
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + days * 86400000);
-    const record = { expiresAt: expiresAt.toISOString(), tokenLimit, createdAt: now.toISOString(), name };
-    await env.SHARE_KV.put(`share:${shareKey}`, JSON.stringify(record), { expirationTtl: Math.ceil((days + 1) * 86400) });
-    await addToIndex(env, shareKey);
-    return json({ shareKey, expiresAt: record.expiresAt, tokenLimit, name, curl: `curl -X POST https://${request.headers.get("host")}/v1/messages -H "X-Share-Key: ${shareKey}" -H "Content-Type: application/json" -d '{...}'` }, 201);
+    try {
+      const body = await request.json().catch(() => ({}));
+      const days = Math.min(30, Math.max(1, parseInt(body.days) || 1));
+      const tokenLimit = Math.min(100_000_000, Math.max(1000, parseInt(body.tokenLimit) || 100000));
+      const name = (body.name || "shared").slice(0, 50);
+      const shareKey = generateKey(16);
+      const now = new Date();
+      const expiresAt = new Date(now.getTime() + days * 86400000);
+      const record = { expiresAt: expiresAt.toISOString(), tokenLimit, createdAt: now.toISOString(), name };
+      await env.SHARE_KV.put(`share:${shareKey}`, JSON.stringify(record), { expirationTtl: Math.ceil((days + 1) * 86400) });
+      await addToIndex(env, shareKey);
+      return json({ shareKey, expiresAt: record.expiresAt, tokenLimit, name, curl: `curl -X POST https://${request.headers.get("host")}/v1/messages -H "X-Share-Key: ${shareKey}" -H "Content-Type: application/json" -d '{...}'` }, 201);
+    } catch (err) {
+      return json({ error: "Create key failed", message: err.message, stack: err.stack }, 500);
+    }
   }
 
   // Revoke key
