@@ -173,4 +173,5 @@ module.exports = {
   getWindowUsage, incrementWindowUsage, storeDetail,
   checkLoginRateLimit, recordLoginSuccess,
   getHistoricalUsage, getCurrentDetails,
+  getCurrentWindowEnd,
 };
