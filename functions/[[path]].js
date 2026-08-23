@@ -62,11 +62,12 @@ async function getShare(env, key) {
 async function deleteShare(env, key) {
   await env.SHARE_KV.delete(getShareKey(key));
   const index = (await env.SHARE_KV.get("share:index", "json")) || [];
-  await env.SHARE_KV.put("share:index", JSON.stringify(index.filter(k => k !== key)));
+  await env.SHARE_KV.put("share:index", JSON.stringify(Array.isArray(index) ? index.filter(k => k !== key) : []));
 }
 
 async function addToIndex(env, key) {
-  const index = (await env.SHARE_KV.get("share:index", "json")) || [];
+  let index = (await env.SHARE_KV.get("share:index", "json")) || [];
+  if (!Array.isArray(index)) index = [];
   if (!index.includes(key)) {
     await env.SHARE_KV.put("share:index", JSON.stringify([...index, key]));
   }
@@ -332,7 +333,8 @@ async function handleAdmin(request, env, adminSecret) {
 
   // List keys
   if (request.method === "GET" && path === "/admin/keys") {
-    const index = (await env.SHARE_KV.get("share:index", "json")) || [];
+    let index = (await env.SHARE_KV.get("share:index", "json")) || [];
+    if (!Array.isArray(index)) index = [];
     const rawShares = await Promise.all(index.map(k => getShare(env, k)));
     const keys = [];
     for (let i = 0; i < index.length; i++) {
