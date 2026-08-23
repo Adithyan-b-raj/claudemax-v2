@@ -6,6 +6,11 @@ compatibility_date = "2025-01-01"
 binding = "SHARE_KV"
 id = "4bde4ce06404405bbc101afdebe66e0c"
 
+[[d1_databases]]
+binding = "SHARE_DB"
+database_name = "share-db"
+database_id = "ee52b0eb-19e6-4fb4-ad5c-4703ac9c54b0"
+
 [vars]
 ENVIRONMENT = "production"
 ADMIN_SECRET = "test-secret-123"

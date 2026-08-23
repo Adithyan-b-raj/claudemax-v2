@@ -7,5 +7,10 @@ pages_build_output_dir = "."
 binding = "SHARE_KV"
 id = "f10b4cba6a794070bf079fc631bfc927"
 
+[[d1_databases]]
+binding = "SHARE_DB"
+database_name = "share-db"
+database_id = "ee52b0eb-19e6-4fb4-ad5c-4703ac9c54b0"
+
 [vars]
 ENVIRONMENT = "production"
