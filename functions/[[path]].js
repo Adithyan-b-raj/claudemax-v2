@@ -304,20 +304,14 @@ export async function onRequest(context) {
 async function handleAdmin(request, env, adminSecret) {
   const url = new URL(request.url);
   const path = url.pathname;
-  const auth = request.headers.get("Authorization") || "";
   const isFormAuth = request.method === "POST" && path === "/admin/view";
 
-  // Allow form-based login (POST /admin/view)
-  if (!isFormAuth && !auth.startsWith("Bearer ")) {
-    return json({ error: "unauthorized" }, 401);
-  }
-
-  // GET /admin or /admin/view → redirect to the SPA dashboard
+  // GET /admin or /admin/view → redirect to the SPA dashboard (public)
   if ((request.method === "GET" && (path === "/admin" || path === "/admin/")) || path === "/admin/view") {
     return serveAdminPage(env, new URL(request.url).origin);
   }
 
-  // POST /admin/view → validate secret, then redirect to dashboard
+  // POST /admin/view → validate secret from form, then redirect
   if (isFormAuth) {
     const ip = request.headers.get("CF-Connecting-IP") || "unknown";
     if (!(await checkLoginRateLimit(env, ip))) return json({ error: "Too many failed attempts" }, 429);
@@ -329,6 +323,10 @@ async function handleAdmin(request, env, adminSecret) {
   }
 
   // All remaining admin routes need Bearer auth
+  const auth = request.headers.get("Authorization") || "";
+  if (!auth.startsWith("Bearer ")) {
+    return json({ error: "unauthorized" }, 401);
+  }
   const token = auth.slice(7);
   if (token !== adminSecret) return json({ error: "unauthorized" }, 401);
 
