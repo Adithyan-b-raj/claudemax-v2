@@ -142,7 +142,7 @@ async function getHistoricalUsage(env, shareKey) {
 async function getCurrentDetails(env, shareKey) {
   const windowEnd = getCurrentWindowEnd();
   const { results } = await env.SHARE_DB.prepare(
-    "SELECT ts, input, output, cache_read, cacheCreation, cache_creation, total " +
+    "SELECT ts, input, output, cache_read, cache_creation, total " +
     "FROM request_details WHERE share_key = ? AND window_end = ? ORDER BY id DESC"
   ).bind(shareKey, windowEnd).all();
 
