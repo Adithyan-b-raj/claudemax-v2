@@ -250,6 +250,7 @@ async function handleAdmin(request, env, adminSecret) {
       shareKey: key, expiresAt: data.expiresAt, tokenLimit: data.tokenLimit,
       createdAt: data.createdAt, name: data.name,
       currentWindowUsed, windowUsage,
+      windowEnd: db.getCurrentWindowEnd(),
       percentUsed: Math.round((currentWindowUsed / data.tokenLimit) * 100),
       breakdown,
       details: details.reverse(),

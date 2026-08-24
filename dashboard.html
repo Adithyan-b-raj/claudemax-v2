@@ -386,11 +386,8 @@
     const r2 = await api("GET", "/admin/stats?key=" + encodeURIComponent(keys[0].shareKey));
     if (r2 && r2.ok) {
       const d = await r2.json();
-      const we = d.windowUsage || {};
-      const entries = Object.entries(we);
-      if (entries.length) {
-        const latest = entries[0];
-        $("s-reset").textContent = new Date(latest[0]).toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" });
+      if (d.windowEnd) {
+        $("s-reset").textContent = new Date(d.windowEnd).toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" });
       }
     }
   }
