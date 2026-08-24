@@ -4,12 +4,12 @@
 
 const WINDOW_MS = 5 * 60 * 60 * 1000;
 const WINDOW_ANCHOR_HOURS = 18;
-const WINDOW_ANCHOR_MINUTES = 28;
+const WINDOW_ANCHOR_MINUTES = 30;
 
 function getCurrentWindowEnd() {
   const now = new Date();
-  const anchor = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), WINDOW_ANCHOR_HOURS, WINDOW_ANCHOR_MINUTES, 0, 0));
-  if (now <= anchor) return anchor.getTime();
+  let anchor = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), WINDOW_ANCHOR_HOURS, WINDOW_ANCHOR_MINUTES, 0, 0));
+  if (now <= anchor) anchor = new Date(anchor.getTime() - 86400000);
   const elapsed = now - anchor;
   const periods = Math.ceil(elapsed / WINDOW_MS);
   return anchor.getTime() + periods * WINDOW_MS;
