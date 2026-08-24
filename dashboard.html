@@ -387,8 +387,7 @@
     if (r2 && r2.ok) {
       const d = await r2.json();
       if (d.windowEnd) {
-        const nextStart = new Date(d.windowEnd + 5 * 3600 * 1000);
-        $("s-reset").textContent = nextStart.toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" });
+        $("s-reset").textContent = new Date(d.windowEnd).toLocaleString("en-US", { hour: "numeric", minute: "2-digit", hour12: true, timeZone: "Asia/Kolkata" });
       }
     }
   }
